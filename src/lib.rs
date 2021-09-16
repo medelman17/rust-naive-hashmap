@@ -6,6 +6,38 @@ use std::collections::hash_map::RandomState;
 use std::hash::{BuildHasher, Hash, Hasher};
 use std::{cmp, mem, ptr};
 
+pub struct HashMapU8<V>
+where
+    V: ::std::fmt::Debug,
+{
+    data: [Option<V>; 256],
+}
+
+impl<V> HashMapU8<V>
+where
+    V: ::std::fmt::Debug,
+{
+    pub fn new() -> HashMapU8<V> {
+        let data = unsafe {
+            let mut data: [Option<V>; 256] = mem::uninitialized();
+            for element in data.iter_mut() {
+                ptr::write(element, None)
+            }
+            data
+        };
+        HashMapU8 { data: data }
+    }
+
+    pub fn insert(&mut self, k: u8, v: V) -> Option<V> {
+        mem::replace(&mut self.data[(k as usize)], Some(v))
+    }
+
+    pub fn get(&mut self, k: &u8) -> Option<&V> {
+        let val = unsafe { self.data.get_unchecked((*k as usize)) };
+        val.as_ref()
+    }
+}
+
 #[derive(Default)]
 pub struct HashMap<K, V, S = RandomState>
 where

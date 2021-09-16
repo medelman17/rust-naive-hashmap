@@ -1,5 +1,4 @@
 extern crate naive_hashmap;
-
 use std::io;
 use std::io::prelude::*;
 
